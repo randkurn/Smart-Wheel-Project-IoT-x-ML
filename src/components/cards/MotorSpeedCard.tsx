@@ -5,7 +5,7 @@ import { useDashboard } from '../../data/store';
 import { useFreshness } from '../../hooks/useFreshness';
 import Card from '../Card';
 
-function WheelBar({ label, actual, target }: { label: string; actual: number; target: number }) {
+function WheelBar({ label, actual, target }: { label: string; actual: number; target: number | null }) {
   const pct = (v: number) => `${Math.min(100, (Math.abs(v) / CONFIG.maxRpm) * 100)}%`;
   return (
     <div>
@@ -14,12 +14,12 @@ function WheelBar({ label, actual, target }: { label: string; actual: number; ta
         <span>
           <span className="mono" style={{ fontSize: 20, fontWeight: 700 }}>{actual.toFixed(0)}</span>
           <span className="unit">RPM</span>
-          <span className="dim mono" style={{ fontSize: 12, marginLeft: 8 }}>target {target.toFixed(0)}</span>
+          <span className="dim mono" style={{ fontSize: 12, marginLeft: 8 }}>target {target == null ? '—' : target.toFixed(0)}</span>
         </span>
       </div>
       <div className="bar">
         <span style={{ width: pct(actual), background: 'var(--accent)' }} />
-        <i className="marker" style={{ left: pct(target) }} />
+        {target != null && <i className="marker" style={{ left: pct(target) }} />}
       </div>
     </div>
   );
@@ -31,7 +31,7 @@ export default function MotorSpeedCard() {
   const hist = useDashboard((s) => s.rpmHistory);
   const { dataStale } = useFreshness();
   const cap = c?.speed_cap_pct ?? 0;
-  const capColor = cap === 0 ? 'var(--bad)' : cap < 100 ? 'var(--warn)' : 'var(--ok)';
+  const capColor = !c ? 'var(--muted)' : cap === 0 ? 'var(--bad)' : cap < 100 ? 'var(--warn)' : 'var(--ok)';
   const chart = hist.slice(-150).map((p) => ({ ...p, s: p.t / 1000 }));
 
   return (
@@ -39,14 +39,14 @@ export default function MotorSpeedCard() {
       title="Kecepatan Motor"
       subtitle={`Encoder · maks ${CONFIG.maxRpm} RPM`}
       stale={t != null && dataStale}
-      right={<span className="pill" style={{ color: capColor, borderColor: capColor }}>Cap {cap}%</span>}
+      right={<span className="pill" style={{ color: capColor, borderColor: capColor }}>Cap {c ? `${cap}%` : '—'}</span>}
     >
       {!t ? (
         <div className="empty">Menunggu telemetri…</div>
       ) : (
         <>
-          <WheelBar label="Roda kiri" actual={t.rpm_left} target={c?.target_rpm_l ?? 0} />
-          <WheelBar label="Roda kanan" actual={t.rpm_right} target={c?.target_rpm_r ?? 0} />
+          <WheelBar label="Roda kiri" actual={t.rpm_left} target={c?.target_rpm_l ?? null} />
+          <WheelBar label="Roda kanan" actual={t.rpm_right} target={c?.target_rpm_r ?? null} />
           <div style={{ height: 110 }}>
             <ResponsiveContainer>
               <LineChart data={chart} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>

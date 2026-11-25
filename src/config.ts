@@ -2,8 +2,6 @@ import type { TerrainClass, ToFZone } from './types/contract';
 
 /** Ambang dari proposal (nilai awal — disesuaikan hasil uji). */
 export const CONFIG = {
-  deviceId: import.meta.env.VITE_DEVICE_ID ?? 'smartwheel-01',
-  dataSource: (import.meta.env.VITE_DATA_SOURCE ?? 'simulator') as 'simulator' | 'firebase',
   /** Data / prediksi lebih tua dari ini ditandai STALE (SW-11) */
   staleMs: 1500,
   /** Buffer grafik accelerometer (SW-05: >= 30 s) */

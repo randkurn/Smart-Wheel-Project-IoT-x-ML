@@ -81,5 +81,7 @@ export interface ModelInfo {
 export interface ConnectionStatus {
   mqtt: boolean;
   firebase: boolean;
-  source: 'simulator' | 'firebase';
+  source: 'simulator' | 'mqtt' | 'firebase';
+  /** Pesan error koneksi terakhir (bila ada) */
+  error?: string;
 }

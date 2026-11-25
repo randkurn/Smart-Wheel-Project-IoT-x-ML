@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { simulator } from '../../data';
+import { Link } from 'react-router-dom';
+import { useSimulator } from '../../data';
 import { useDashboard } from '../../data/store';
 import { useFreshness } from '../../hooks/useFreshness';
 import type { TerrainClass } from '../../types/contract';
 
 function SimControls() {
   const [, force] = useState(0);
+  const simulator = useSimulator();
   if (!simulator) return null;
   const c = simulator.controls;
   const rerender = () => force((n) => n + 1);
@@ -59,8 +61,11 @@ export default function Topbar({ title }: { title: string }) {
       <h1>{title}</h1>
       {link}
       <span className="pill off mono">{deviceId ?? '—'}</span>
-      <span className={`pill ${conn.mqtt ? 'ok' : 'off'}`}>MQTT</span>
-      <span className={`pill ${conn.firebase ? 'ok' : 'off'}`}>Firebase</span>
+      <Link to="/settings" title="Atur koneksi" style={{ display: 'flex', gap: 6 }}>
+        <span className={`pill ${conn.mqtt ? 'ok' : 'off'}`}>MQTT</span>
+        <span className={`pill ${conn.firebase ? 'ok' : 'off'}`}>Firebase</span>
+        {conn.error && <span className="pill bad" title={conn.error}>! Koneksi</span>}
+      </Link>
       <div className="spacer" />
       <SimControls />
     </header>

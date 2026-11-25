@@ -1,6 +1,7 @@
 // SW-08 Info model, device & sistem
 import { Fragment } from 'react';
 import { CONFIG } from '../../config';
+import { getSettings } from '../../settings';
 import { useDashboard } from '../../data/store';
 import Card from '../Card';
 
@@ -39,7 +40,7 @@ export default function SystemInfoPanel() {
       <div>
         <div className="muted" style={{ fontSize: 12, marginBottom: 6, fontWeight: 600 }}>DEVICE</div>
         <dl className="kv">
-          <dt>device_id</dt><dd className="mono">{t?.device_id ?? CONFIG.deviceId}</dd>
+          <dt>device_id</dt><dd className="mono">{t?.device_id ?? getSettings().deviceId}</dd>
           {DEVICES.map(([k, v]) => (<Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>))}
         </dl>
       </div>

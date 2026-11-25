@@ -19,6 +19,31 @@ IMU 100 Hz → 10 Hz, 3 kelas lintasan bergantian tiap 12 s, prediksi **dummy**,
 dan FSR dengan episode beban tidak seimbang. Topbar punya kontrol simulator:
 paksa jenis lintasan, **Putus data** (uji STALE), dan **Simulasi E-stop**.
 
+## Setting koneksi (`/settings`)
+
+Pilih sumber data, isi koneksinya, klik **Cek koneksi**, lalu **Simpan & terapkan**.
+Pengaturan tersimpan di localStorage browser; nilai awal dari `.env`.
+
+| Sumber | Untuk apa | Yang dicek |
+|---|---|---|
+| Simulator | Pengembangan tanpa alat | — |
+| Alat (MQTT langsung) | Demo real-time di jaringan lokal | broker → subscribe → pesan telemetri (Hz, device_id, field) → prediksi ML |
+| Database (Firebase) | Data dari bridge, bisa diakses dari mana saja | config → `.info/connected` → `/devices/{id}/telemetry/latest`, prediksi, `model_info` |
+
+Browser hanya bisa MQTT lewat **WebSocket**. Untuk Mosquitto, tambahkan di `mosquitto.conf`:
+
+```
+listener 1883
+listener 9001
+protocol websockets
+allow_anonymous false
+password_file /etc/mosquitto/passwd
+```
+
+ESP32 tetap memakai port 1883; dashboard memakai `ws://<ip-broker>:9001`.
+Kalau dashboard dibuka lewat HTTPS, broker wajib `wss://`.
+Kredensial di Setting tersimpan di browser — pakai akun broker yang hanya boleh subscribe.
+
 ## Struktur
 
 ```
@@ -28,7 +53,10 @@ src/
   data/
     source.ts              Interface DataSource/DataSink
     simulator.ts           Simulator telemetri (T04)
-    firebaseSource.ts      STUB Firebase (T08/T10)
+    mqttSource.ts          Sumber MQTT over WebSocket
+    firebaseSource.ts      Sumber Firebase Realtime Database
+    normalize.ts           Payload mentah -> tipe kontrak (toleran field lama)
+    connectionTest.ts      Cek koneksi untuk halaman Setting
     store.ts               Store global + buffer 30 s
   hooks/useFreshness.ts    Logika online / stale / offline (SW-11)
   components/
@@ -36,7 +64,8 @@ src/
              DeviceStatusCard (SW-04), SystemInfoPanel (SW-08), EventList
     charts/  AccelChart (SW-05)
     visual/  TofRadar (SW-06), Wheelchair3D (SW-07)
-  pages/     DashboardPage, MlEvalPage (SW-09, placeholder), HistoryPage (SW-10)
+  pages/     DashboardPage, MlEvalPage (SW-09, placeholder), HistoryPage (SW-10), SettingsPage
+  settings.ts              Pengaturan koneksi (localStorage)
 ```
 
 ## Pembagian komponen (sesuai sheet tugas)

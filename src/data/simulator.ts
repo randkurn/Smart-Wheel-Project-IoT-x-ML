@@ -8,6 +8,7 @@
 import { CONFIG, zoneFromMm } from '../config';
 import type { DeviceEvent, DeviceMode, Severity, TerrainClass } from '../types/contract';
 import type { DataSink, DataSource } from './source';
+import { getSettings } from '../settings';
 
 const G = 9.81;
 const IMU_HZ = 100;
@@ -221,7 +222,7 @@ export class TelemetrySimulator implements DataSource {
     });
 
     sink.telemetry({
-      device_id: CONFIG.deviceId,
+      device_id: getSettings().deviceId,
       timestamp_ms: now,
       trial_id: `S01-T${String(Math.floor(this.tSim / (SEGMENT_S * 3)) + 1).padStart(3, '0')}`,
       imu: {

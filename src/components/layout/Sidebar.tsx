@@ -4,6 +4,7 @@ const links = [
   { to: '/', label: 'Dashboard', icon: '◧' },
   { to: '/ml', label: 'ML Evaluasi', icon: '◩' },
   { to: '/history', label: 'Histori', icon: '☰' },
+  { to: '/settings', label: 'Setting', icon: '⚙' },
 ];
 
 export default function Sidebar() {

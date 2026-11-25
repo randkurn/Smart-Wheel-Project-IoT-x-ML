@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { CONFIG } from '../config';
+import { getSettings } from '../settings';
 import type {
   ConnectionStatus, ControlStatus, DeviceEvent, ModelInfo, Prediction, SeatStatus, Telemetry,
 } from '../types/contract';
@@ -30,24 +31,32 @@ export interface DashboardState {
 const MAX_POINTS = CONFIG.accelBufferS * CONFIG.displayHz; // 30 s @ 10 Hz
 const MAX_EVENTS = 200;
 
-let state: DashboardState = {
+const initialState = (): DashboardState => ({
   telemetry: null,
   prediction: null,
   control: null,
   seat: null,
   modelInfo: null,
-  connection: { mqtt: false, firebase: false, source: CONFIG.dataSource },
+  connection: { mqtt: false, firebase: false, source: getSettings().source },
   events: [],
   accelHistory: [],
   vibHistory: [],
   rpmHistory: [],
   tofSweep: [],
   lastRxAt: null,
-};
+});
+
+let state: DashboardState = initialState();
 
 const listeners = new Set<() => void>();
 function set(patch: Partial<DashboardState>) {
   state = { ...state, ...patch };
+  listeners.forEach((l) => l());
+}
+
+/** Kosongkan semua data — dipakai saat berganti sumber data. */
+export function resetStore() {
+  state = initialState();
   listeners.forEach((l) => l());
 }
 const push = <T,>(arr: T[], item: T, max = MAX_POINTS) => {

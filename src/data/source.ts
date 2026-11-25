@@ -2,7 +2,7 @@ import type {
   ConnectionStatus, ControlStatus, DeviceEvent, ModelInfo, Prediction, SeatStatus, Telemetry,
 } from '../types/contract';
 
-/** Semua sumber data (simulator, Firebase) mendorong data lewat sink ini. */
+/** Semua sumber data (simulator, MQTT, Firebase) mendorong data lewat sink ini. */
 export interface DataSink {
   telemetry(t: Telemetry): void;
   prediction(p: Prediction): void;
@@ -14,7 +14,7 @@ export interface DataSink {
 }
 
 export interface DataSource {
-  readonly kind: 'simulator' | 'firebase';
+  readonly kind: 'simulator' | 'mqtt' | 'firebase';
   start(sink: DataSink): void;
   stop(): void;
 }

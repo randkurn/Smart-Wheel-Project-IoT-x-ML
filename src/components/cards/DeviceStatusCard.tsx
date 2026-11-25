@@ -52,13 +52,13 @@ export default function DeviceStatusCard() {
       <div>
         <Row label="Koneksi" value={offline ? 'Offline' : dataStale ? 'Stale' : 'Online'} tone={offline ? 'bad' : dataStale ? 'warn' : 'ok'} />
         <Row label="Data terakhir" value={ageMs == null ? '—' : `${(ageMs / 1000).toFixed(1)} s lalu`} tone={dataStale ? 'warn' : 'ok'} />
-        <Row label="Mode" value={mode.replace('_', '-')} tone={modeTone} />
+        <Row label="Mode" value={c ? mode.replace('_', '-') : '—'} tone={c ? modeTone : 'off'} />
         <Row label="Prediksi ML" value={predStale ? 'Stale' : 'Valid'} tone={predStale ? 'warn' : 'ok'} />
         <Row label="Sensor IMU" value={t?.sensor_ok ? 'OK' : 'Error'} tone={t?.sensor_ok ? 'ok' : 'bad'} />
         <Row label="Sensor ToF" value={t?.tof_ok ? 'OK' : 'Invalid'} tone={t?.tof_ok ? 'ok' : 'warn'} />
-        <Row label="Remote" value={c?.remote_link ? 'Terhubung' : 'Putus'} tone={c?.remote_link ? 'ok' : 'bad'} />
-        <Row label="Buzzer" value={c?.buzzer ? 'Bunyi' : 'Diam'} tone={c?.buzzer ? 'warn' : 'off'} />
-        <Row label="Beban dudukan" value={seat?.imbalance_flag ? 'Tidak seimbang' : 'Seimbang'} tone={seat?.imbalance_flag ? 'warn' : 'ok'} />
+        <Row label="Remote" value={!c ? '—' : c.remote_link ? 'Terhubung' : 'Putus'} tone={!c ? 'off' : c.remote_link ? 'ok' : 'bad'} />
+        <Row label="Buzzer" value={!c ? '—' : c.buzzer ? 'Bunyi' : 'Diam'} tone={c?.buzzer ? 'warn' : 'off'} />
+        <Row label="Beban dudukan" value={!seat ? '—' : seat.imbalance_flag ? 'Tidak seimbang' : 'Seimbang'} tone={!seat ? 'off' : seat.imbalance_flag ? 'warn' : 'ok'} />
       </div>
       <SeatMap />
     </Card>
